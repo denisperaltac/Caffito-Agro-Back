@@ -1,14 +1,14 @@
-import db from "../models/index.js";
+import { User } from "../db.js";
 import bcrypt from "bcrypt";
 import { buildWhereClause, buildOrderClause } from "../utils/filters.js";
 
 export const createUser = async ({ name, email, password, role }) => {
-  const existing = await db.User.scope("withPassword").findOne({
+  const existing = await User.scope("withPassword").findOne({
     where: { email },
   });
   if (existing) throw new Error("Email already in use");
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = await db.User.create({ name, email, passwordHash, role });
+  const user = await User.create({ name, email, passwordHash, role });
   return user;
 };
 
@@ -28,19 +28,19 @@ export const listUsers = async (options = {}) => {
     queryOptions.offset = pagination.offset;
   }
 
-  const { count, rows } = await db.User.findAndCountAll(queryOptions);
+  const { count, rows } = await User.findAndCountAll(queryOptions);
 
   return { data: rows, total: count };
 };
 
 export const getUserById = async (id) => {
-  const user = await db.User.findByPk(id);
+  const user = await User.findByPk(id);
   if (!user) throw new Error("User not found");
   return user;
 };
 
 export const updateUser = async (id, data) => {
-  const user = await db.User.scope("withPassword").findByPk(id);
+  const user = await User.scope("withPassword").findByPk(id);
   if (!user) throw new Error("User not found");
   const { name, email, password, role, isActive } = data;
   if (name !== undefined) user.name = name;
@@ -49,11 +49,11 @@ export const updateUser = async (id, data) => {
   if (isActive !== undefined) user.isActive = isActive;
   if (password) user.passwordHash = await bcrypt.hash(password, 10);
   await user.save();
-  return db.User.findByPk(id);
+  return User.findByPk(id);
 };
 
 export const deleteUser = async (id) => {
-  const count = await db.User.destroy({ where: { id } });
+  const count = await User.destroy({ where: { id } });
   if (!count) throw new Error("User not found");
   return { id };
 };

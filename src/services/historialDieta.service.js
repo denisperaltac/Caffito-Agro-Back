@@ -1,13 +1,13 @@
-import db from "../models/index.js";
+import { HistorialDieta } from "../db.js";
 import { buildWhereClause, buildOrderClause } from "../utils/filters.js";
 
-export const createHistorialDieta = async (data) => db.HistorialDieta.create(data);
+export const createHistorialDieta = async (data) => HistorialDieta.create(data);
 export const listHistorialDietas = async (options = {}) => {
   const { pagination, filters, sort } = options;
-  
+
   const where = buildWhereClause(filters || {});
   const order = buildOrderClause(sort);
-  
+
   const queryOptions = {
     where,
     order,
@@ -18,23 +18,23 @@ export const listHistorialDietas = async (options = {}) => {
     queryOptions.offset = pagination.offset;
   }
 
-  const { count, rows } = await db.HistorialDieta.findAndCountAll(queryOptions);
-  
+  const { count, rows } = await HistorialDieta.findAndCountAll(queryOptions);
+
   return { data: rows, total: count };
 };
 export const getHistorialDieta = async (id) => {
-  const entity = await db.HistorialDieta.findByPk(id);
+  const entity = await HistorialDieta.findByPk(id);
   if (!entity) throw new Error("HistorialDieta not found");
   return entity;
 };
 export const updateHistorialDieta = async (id, data) => {
-  const entity = await db.HistorialDieta.findByPk(id);
+  const entity = await HistorialDieta.findByPk(id);
   if (!entity) throw new Error("HistorialDieta not found");
   await entity.update(data);
   return entity;
 };
 export const deleteHistorialDieta = async (id) => {
-  const count = await db.HistorialDieta.destroy({ where: { id } });
+  const count = await HistorialDieta.destroy({ where: { id } });
   if (!count) throw new Error("HistorialDieta not found");
   return { id };
 };

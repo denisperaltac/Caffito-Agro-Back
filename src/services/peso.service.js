@@ -1,7 +1,7 @@
-import db from "../models/index.js";
+import { Peso, Animal } from "../db.js";
 import { buildWhereClause, buildOrderClause } from "../utils/filters.js";
 
-export const createPeso = async (data) => db.Peso.create(data);
+export const createPeso = async (data) => Peso.create(data);
 export const listPesos = async (options = {}) => {
   const { pagination, filters, sort } = options;
 
@@ -11,7 +11,7 @@ export const listPesos = async (options = {}) => {
   const queryOptions = {
     where,
     order,
-    include: [{ model: db.Animal, as: "Animal" }],
+    include: [{ model: Animal, as: "Animal" }],
   };
 
   if (pagination) {
@@ -19,23 +19,23 @@ export const listPesos = async (options = {}) => {
     queryOptions.offset = pagination.offset;
   }
 
-  const { count, rows } = await db.Peso.findAndCountAll(queryOptions);
+  const { count, rows } = await Peso.findAndCountAll(queryOptions);
 
   return { data: rows, total: count };
 };
 export const getPeso = async (id) => {
-  const entity = await db.Peso.findByPk(id);
+  const entity = await Peso.findByPk(id);
   if (!entity) throw new Error("Peso not found");
   return entity;
 };
 export const updatePeso = async (id, data) => {
-  const entity = await db.Peso.findByPk(id);
+  const entity = await Peso.findByPk(id);
   if (!entity) throw new Error("Peso not found");
   await entity.update(data);
   return entity;
 };
 export const deletePeso = async (id) => {
-  const count = await db.Peso.destroy({ where: { id } });
+  const count = await Peso.destroy({ where: { id } });
   if (!count) throw new Error("Peso not found");
   return { id };
 };

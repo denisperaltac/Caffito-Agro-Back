@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import db from "../models/index.js";
+import { User } from "../db.js";
 
 export const authenticateToken = async (req, res, next) => {
   try {
@@ -11,7 +11,7 @@ export const authenticateToken = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await db.User.findByPk(decoded.userId);
+    const user = await User.findByPk(decoded.userId);
 
     if (!user || !user.isActive) {
       return res.status(401).json({ message: "Invalid or inactive user" });

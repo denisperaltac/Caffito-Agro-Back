@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import db from "../models/index.js";
+import { User } from "../db.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
@@ -25,7 +25,7 @@ export const generateTokens = (user) => {
 };
 
 export const login = async (email, password) => {
-  const user = await db.User.scope("withPassword").findOne({
+  const user = await User.scope("withPassword").findOne({
     where: { email },
   });
 
@@ -61,13 +61,13 @@ export const login = async (email, password) => {
 export const register = async (userData) => {
   const { name, email, password, role = "user" } = userData;
 
-  const existingUser = await db.User.findOne({ where: { email } });
+  const existingUser = await User.findOne({ where: { email } });
   if (existingUser) {
     throw new Error("Email already registered");
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = await db.User.create({
+  const user = await User.create({
     name,
     email,
     passwordHash,
@@ -93,7 +93,7 @@ export const register = async (userData) => {
 export const refreshToken = async (refreshToken) => {
   try {
     const decoded = jwt.verify(refreshToken, JWT_SECRET);
-    const user = await db.User.scope("withPassword").findByPk(decoded.userId);
+    const user = await User.scope("withPassword").findByPk(decoded.userId);
 
     if (!user || user.refreshToken !== refreshToken || !user.isActive) {
       throw new Error("Invalid refresh token");
@@ -119,5 +119,5 @@ export const refreshToken = async (refreshToken) => {
 };
 
 export const logout = async (userId) => {
-  await db.User.update({ refreshToken: null }, { where: { id: userId } });
+  await User.update({ refreshToken: null }, { where: { id: userId } });
 };

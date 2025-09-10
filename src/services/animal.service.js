@@ -1,8 +1,8 @@
-import db from "../models/index.js";
+import { Animal, Dieta, Corral } from "../db.js";
 import { buildWhereClause, buildOrderClause } from "../utils/filters.js";
 
 export const createAnimal = async (data) => {
-  return db.Animal.create(data);
+  return Animal.create(data);
 };
 
 export const listAnimals = async (options = {}) => {
@@ -15,8 +15,8 @@ export const listAnimals = async (options = {}) => {
     where,
     order,
     include: [
-      { model: db.Dieta, as: "Dieta" },
-      { model: db.Corral, as: "Corral" },
+      { model: Dieta, as: "Dieta" },
+      { model: Corral, as: "Corral" },
     ],
   };
 
@@ -25,26 +25,26 @@ export const listAnimals = async (options = {}) => {
     queryOptions.offset = pagination.offset;
   }
 
-  const { count, rows } = await db.Animal.findAndCountAll(queryOptions);
+  const { count, rows } = await Animal.findAndCountAll(queryOptions);
 
   return { data: rows, total: count };
 };
 
 export const getAnimalByRp = async (rp) => {
-  const animal = await db.Animal.findByPk(rp);
+  const animal = await Animal.findByPk(rp);
   if (!animal) throw new Error("Animal not found");
   return animal;
 };
 
 export const updateAnimal = async (rp, data) => {
-  const animal = await db.Animal.findByPk(rp);
+  const animal = await Animal.findByPk(rp);
   if (!animal) throw new Error("Animal not found");
   await animal.update(data);
   return animal;
 };
 
 export const deleteAnimal = async (rp) => {
-  const count = await db.Animal.destroy({ where: { rp } });
+  const count = await Animal.destroy({ where: { rp } });
   if (!count) throw new Error("Animal not found");
   return { rp };
 };

@@ -20,7 +20,7 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-app.use("/api/v1", v1Router);
+app.use("", v1Router);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
